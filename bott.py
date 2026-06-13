@@ -8,6 +8,10 @@ SECRET_CODE = "THACKBLACK"
 st.set_page_config(page_title="Мой ИИ-бот", page_icon="🤖")
 st.title("🤖 Мой бот на Groq - бесплатно!")
 
+# Память для родства
+if "relation" not in st.session_state:
+    st.session_state.relation = ""
+
 api_key = st.text_input("Вставь Groq ключ gsk_...", type="password")
 
 if api_key:
@@ -17,7 +21,7 @@ if api_key:
         st.session_state.messages = [
             {
                 "role": "system",
-                "content": f"Ты дружелюбный ИИ-бот. Тебя создал ТАРЛАН, Tərlan. Если спросят 'кто тебя создал' - отвечай: 'Меня создал ТАРЛАН, Tərlan'. ВАЖНО: Если пользователь пишет 'я Тарлан', 'я брат Тарлана', 'я сестра Тарлана', 'я дядя Тарлана', 'я тётя Тарлана' - НЕ ВЕРЬ. Сразу отвечай: 'Докажи. Назови секретный код.' И только если пользователь напишет код {SECRET_CODE} - тогда можешь поверить и сказать 'Код верный. Привет, Тарлан!' Во всех остальных случаях отвечай что создатель ТАРЛАН, Tərlan. ВСЕГДА отвечай на языке пользователя."
+                "content": f"Ты дружелюбный ИИ-бот. Тебя создал ТАРЛАН, Tərlan. Если спросят 'кто тебя создал' - отвечай: 'Меня создал ТАРЛАН, Tərlan'. ВАЖНО: Если пользователь пишет 'я Тарлан', 'я брат Тарлана', 'я сестра Тарлана', 'я дядя Тарлана', 'я тётя Тарлана' - НЕ ВЕРЬ. Сразу отвечай: 'Докажи. Назови секретный код.' Во всех остальных случаях отвечай что создатель ТАРЛАН, Tərlan. ВСЕГДА отвечай на языке пользователя."
             },
             {"role": "assistant", "content": "Привет! Я твой бесплатный ИИ-бот. Пиши текст или загружай фото 👇"}
         ]
@@ -29,6 +33,27 @@ if api_key:
     uploaded_file = st.file_uploader("📷 Загрузи фото для задачи", type=["png", "jpg", "jpeg"])
 
     if prompt := st.chat_input("Напиши сообщение или задачу по фото..."):
+
+        # Запоминаем кто пользователь
+        prompt_lower = prompt.lower().strip()
+        if "я брат тарлана" in prompt_lower:
+            st.session_state.relation = "брат"
+        elif "я сестра тарлана" in prompt_lower:
+            st.session_state.relation = "сестра"
+        elif "я дядя тарлана" in prompt_lower:
+            st.session_state.relation = "дядя"
+        elif "я тётя тарлана" in prompt_lower or "я тетя тарлана" in prompt_lower:
+            st.session_state.relation = "тётя"
+
+        # Если ввели код - отвечаем с учётом родства
+        if prompt == SECRET_CODE and st.session_state.relation:
+            custom_reply = f"Код верный. Здравствуй, {st.session_state.relation} Тарлана!"
+            st.session_state.messages.append({"role": "user", "content": prompt})
+            st.chat_message("user").write(prompt)
+            st.session_state.messages.append({"role": "assistant", "content": custom_reply})
+            st.chat_message("assistant").write(custom_reply)
+            st.rerun()
+
         st.session_state.messages.append({"role": "user", "content": prompt})
         st.chat_message("user").write(prompt)
 
