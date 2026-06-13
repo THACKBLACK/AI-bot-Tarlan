@@ -3,7 +3,7 @@ from groq import Groq
 from PIL import Image
 import base64
 
-SECRET_CODE = "THACKBLACK"
+SECRET_CODE = "QOHUM"
 
 st.set_page_config(page_title="Мой ИИ-бот", page_icon="🤖")
 st.title("🤖 Мой бот на Groq - бесплатно!")
