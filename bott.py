@@ -50,7 +50,7 @@ if api_key:
                         }
 
                     response = client.chat.completions.create(
-                        model="meta-llama/llama-4-maverick-17b-128e-instruct",
+                        model="llava-v1.5-7b-4096-preview",
                         messages=messages_for_api,
                         temperature=0.7,
                         max_tokens=1024
