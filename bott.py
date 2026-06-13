@@ -45,4 +45,22 @@ if api_key:
                             "role": "user",
                             "content": [
                                 {"type": "text", "text": prompt if prompt else "Реши задачу с этого фото"},
-                                {"type": "image_url", "image_url": {"
+                                {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{img_base64}"}}
+                            ]
+                        }
+
+                    response = client.chat.completions.create(
+                        model="llama-3.2-90b-vision-preview",
+                        messages=messages_for_api,
+                        temperature=0.7,
+                        max_tokens=1024
+                    )
+
+                    reply = response.choices[0].message.content
+                    st.session_state.messages.append({"role": "assistant", "content": reply})
+                    st.write(reply)
+
+                except Exception as e:
+                    st.error(f"Ошибка: {e}")
+else:
+    st.info("Вставь свой Groq API ключ сверху чтобы начать чат")
